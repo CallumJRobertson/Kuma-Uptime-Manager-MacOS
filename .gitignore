@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# Xcode user-specific files
+*.xcuserstate
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+# Xcode workspace/user data
+xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Build products
+build/
+DerivedData/
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
