@@ -18,6 +18,10 @@ struct SettingsView: View {
                     }
                     .disabled(!store.hasConfiguration)
 
+                    Button("Use Demo Server") {
+                        store.useDemoServerForReview()
+                    }
+
                     Button("Save & Connect") {
                         store.saveSettings()
                         store.refreshNow()
@@ -72,6 +76,9 @@ struct SettingsView: View {
                 Text(store.connectionMode == .publicStatusPage
                     ? "Public mode uses status-page endpoints. Set slug only if it is not `default`."
                     : "Private mode uses authenticated server endpoints and does not require a status-page slug.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text("HTTP is supported for local hosts/IPs only. Use HTTPS for remote servers.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
 

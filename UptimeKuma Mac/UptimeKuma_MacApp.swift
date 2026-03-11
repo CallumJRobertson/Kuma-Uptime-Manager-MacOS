@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-enum AppSceneID {
-    static let settings = "settings-window"
-}
-
 @main
 struct UptimeKuma_MacApp: App {
     @StateObject private var store = UptimeKumaStatusStore()
@@ -27,11 +23,10 @@ struct UptimeKuma_MacApp: App {
         }
         .menuBarExtraStyle(.window)
 
-        Window("Settings", id: AppSceneID.settings) {
+        Settings {
             SettingsView(store: store)
                 .frame(width: 420)
         }
-        .windowResizability(.contentSize)
     }
 }
 

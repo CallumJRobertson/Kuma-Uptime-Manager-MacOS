@@ -222,7 +222,7 @@ final class UptimeKumaStatusStore: ObservableObject {
             statusPageSlugOverride: statusPageSlug,
             connectionMode: connectionMode
         ) else {
-            errorMessage = "Enter a valid Host URL (for example: https://status.example.com)."
+            errorMessage = "Enter a valid Host URL. HTTP is allowed only for local hosts/IPs; use HTTPS for remote servers."
             appendLog("Save failed: invalid host URL")
             return
         }
@@ -344,6 +344,22 @@ final class UptimeKumaStatusStore: ObservableObject {
         errorMessage = warningMessage
         appendLog("Save complete. Starting polling.")
         startPolling()
+    }
+
+    func useDemoServerForReview() {
+        appendLog("Applying demo server configuration")
+        connectionMode = .privateServer
+        privateAuthMethod = .apiKey
+        displayName = "Demo Server"
+        baseURLString = "https://status.callumrobertson.tech"
+        statusPageSlug = ""
+        metricsAPIKey = "uk4_i9JzdcCkLzbCabTv4Y_iJ6q_HVirh4fE0PTJhUOn"
+        managementUsername = "test123"
+        managementPassword = "test123"
+        authUsername = ""
+        authPassword = ""
+        saveSettings()
+        refreshNow()
     }
 
     private func applyLaunchAtLoginSetting(_ enabled: Bool) {
@@ -503,8 +519,11 @@ final class UptimeKumaStatusStore: ObservableObject {
         guard
             let scheme = components.scheme?.lowercased(),
             ["http", "https"].contains(scheme),
-            components.host != nil
+            let host = components.host?.lowercased()
         else {
+            return nil
+        }
+        if scheme == "http", !isAllowedLocalHTTPHost(host) {
             return nil
         }
 
@@ -555,6 +574,43 @@ final class UptimeKumaStatusStore: ObservableObject {
             preferredStatusPageSlug: resolvedStatusPageSlug,
             savedStatusPageSlug: connectionMode == .publicStatusPage ? overrideSlug : ""
         )
+    }
+
+    private static func isAllowedLocalHTTPHost(_ host: String) -> Bool {
+        let normalized = host.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard !normalized.isEmpty else { return false }
+
+        if normalized == "localhost" || normalized == "::1" || normalized == "0.0.0.0" {
+            return true
+        }
+        if normalized.hasSuffix(".local") {
+            return true
+        }
+        if normalized.contains(":"),
+           (normalized.hasPrefix("fe80:") || normalized.hasPrefix("fc") || normalized.hasPrefix("fd"))
+        {
+            return true
+        }
+        return isLocalIPv4Address(normalized)
+    }
+
+    private static func isLocalIPv4Address(_ host: String) -> Bool {
+        let parts = host.split(separator: ".", omittingEmptySubsequences: false)
+        guard parts.count == 4 else { return false }
+        let octets = parts.compactMap { Int($0) }
+        guard octets.count == 4, octets.allSatisfy({ (0 ... 255).contains($0) }) else {
+            return false
+        }
+
+        let first = octets[0]
+        let second = octets[1]
+
+        if first == 10 { return true }
+        if first == 127 { return true }
+        if first == 192, second == 168 { return true }
+        if first == 172, (16 ... 31).contains(second) { return true }
+        if first == 169, second == 254 { return true }
+        return false
     }
 
     private func handleUnauthorized() {

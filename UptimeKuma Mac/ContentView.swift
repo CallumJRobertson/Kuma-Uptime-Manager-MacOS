@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ContentView: View {
     @ObservedObject var store: UptimeKumaStatusStore
-    @Environment(\.openWindow) private var openWindow
+    @Environment(\.openSettings) private var openSettings
     @Environment(\.openURL) private var openURL
     @State private var dismissedDownMonitorIDs: Set<Int> = []
     @State private var selectedMonitorID: Int?
@@ -143,7 +143,7 @@ struct ContentView: View {
         HStack {
             Button("Settings") {
                 NSApp.activate(ignoringOtherApps: true)
-                openWindow(id: AppSceneID.settings)
+                openSettings()
             }
             Spacer()
             Button("Quit") {
