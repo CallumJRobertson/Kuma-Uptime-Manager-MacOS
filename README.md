@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://apps.apple.com/gb/app/kuma-uptime-manager/id6760319527?mt=12">
-    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" height="60">
+    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" height="80">
   </a>
 </p>
 
